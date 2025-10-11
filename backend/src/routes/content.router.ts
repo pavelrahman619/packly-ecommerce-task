@@ -1,32 +1,35 @@
 import express from "express";
 import {
-  getBanner,
-  updateBanner,
-  getSaleSection,
-  updateSaleSection,
-  getFeaturedProducts,
-  updateFeaturedProducts,
-  getFooter,
-  updateFooter,
+  getAllContent,
+  getContentById,
+  createContent,
+  updateContent,
+  deleteContent,
+  reorderContent,
+  bulkReorderContent,
 } from "../controllers/content.controller";
+import {
+  validateCreateContent,
+  validateUpdateContent,
+  validateQuery,
+  validateReorder,
+  validateBulkReorder,
+  validateGetById,
+  validateDelete,
+} from "../middleware/validation.middleware";
 
 const router = express.Router();
 
-// Banner routes
-router.get("/banner", getBanner);
-router.put("/banner", updateBanner);
+// Public routes (no authentication required)
+router.get("/", validateQuery, getAllContent);
+router.get("/:id", validateGetById, getContentById);
 
-// Sale section routes
-router.get("/sale-section", getSaleSection);
-router.put("/sale-section", updateSaleSection);
-
-// Featured products routes
-router.get("/featured-products", getFeaturedProducts);
-router.put("/featured-products", updateFeaturedProducts);
-
-// Footer routes
-router.get("/footer", getFooter);
-router.put("/footer", updateFooter);
+// Admin routes (temporarily without authentication for testing)
+router.post("/", validateCreateContent, createContent);
+router.put("/:id", validateUpdateContent, updateContent);
+router.delete("/:id", validateDelete, deleteContent);
+router.patch("/:id/order", validateReorder, reorderContent);
+router.post("/bulk-reorder", validateBulkReorder, bulkReorderContent);
 
 export default router;
 
