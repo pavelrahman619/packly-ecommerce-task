@@ -1,26 +1,15 @@
 import express from "express";
-import { Server } from "socket.io";
-import http from "http";
 import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import userRoutes from "./routes/user.router";
-import authRoutes from "./routes/auth.router";
 import contentRoutes from "./routes/content.router";
-import categoryRoutes from "./routes/category.router";
-import productRoutes from "./routes/product.router";
-import orderRoutes from "./routes/order.router";
-import cartRoutes from "./routes/cart.router";
-import deliveryRoutes from "./routes/delivery.router";
-import paymentRoutes from "./routes/payment.router";
-import adminRoutes from "./routes/admin.router";
-import uploadRoutes from "./routes/upload.router";
 import testRoutes from "./routes/test.router";
+import swaggerUi from 'swagger-ui-express';
+import swaggerJsdoc from 'swagger-jsdoc';
 
 import { errorHandler } from "./middleware/erroHandler";
 import cors from "cors";
 import { Request, Response, NextFunction } from "express";
-import { verifyToken } from "./services/jwt.service";
 
 dotenv.config();
 const app = express();
@@ -93,78 +82,57 @@ app.use(cors(corsOptions));
 // Handle preflight requests
 app.options('*', cors(corsOptions));
 
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    origin: function (origin: string | undefined, callback: (err: Error | null, allow?: boolean) => void) {
-      if (!origin) return callback(null, true);
-      
-      const isAllowed = allowedOrigins.some(allowedOrigin => {
-        if (typeof allowedOrigin === 'string') {
-          return allowedOrigin === origin;
-        } else if (allowedOrigin instanceof RegExp) {
-          return allowedOrigin.test(origin);
-        }
-        return false;
-      });
-      
-      if (isAllowed || process.env.NODE_ENV === "development") {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
+// Swagger configuration
+const swaggerOptions = {
+  definition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Dynamic Content Blocks API',
+      version: '1.0.0',
+      description: 'A flexible content management API for dynamic content blocks',
     },
-    methods: ["GET", "POST", "DELETE", "PUT"],
-    credentials: true,
+    servers: [
+      {
+        url: process.env.NODE_ENV === 'production' 
+          ? process.env.API_URL || 'https://your-api-domain.com'
+          : `http://localhost:${port}`,
+        description: process.env.NODE_ENV === 'production' ? 'Production server' : 'Development server',
+      },
+    ],
+    components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: 'http',
+          scheme: 'bearer',
+          bearerFormat: 'JWT',
+        },
+      },
+    },
   },
-});
-const adminSockets = new Map<string, string>();
+  apis: ['./src/controllers/*.ts', './src/routes/*.ts'], // Path to the API files
+};
 
-io.on("connection", (socket) => {
-  console.log(`New client connected: ${socket.id}`);
+const swaggerSpec = swaggerJsdoc(swaggerOptions);
 
-  socket.on("authenticate", (data) => {
-    const { token } = data;
-    try {
-      const decoded = verifyToken(token);
-      if (decoded.role === "admin") {
-        adminSockets.set(socket.id, decoded.userId);
-        console.log(`Admin connected: ${decoded.userId}`);
-      }
-    } catch (error) {
-      console.error("Authentication failed:", error);
-      socket.disconnect();
-    }
-  });
-
-  // Handle disconnection
-  socket.on("disconnect", () => {
-    adminSockets.delete(socket.id);
-    console.log(`Client disconnected: ${socket.id}`);
-  });
-});
-
-app.set("io", io);
 app.set("origins", allowedOrigins);
 
 app.use(helmet());
 app.use(morgan("dev"));
 app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Server is running v1!");
+// API Documentation
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get('/api/docs.json', (req, res) => {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
 });
-app.use("/api/users", userRoutes);
-app.use("/api/auth", authRoutes);
+
+app.get("/", (req, res) => {
+  res.send("Dynamic Content Blocks API v1.0.0 - Server is running!");
+});
+
+// API Routes
 app.use("/api/content", contentRoutes);
-app.use("/api/categories", categoryRoutes);
-app.use("/api/products", productRoutes);
-app.use("/api/orders", orderRoutes);
-app.use("/api/cart", cartRoutes);
-app.use("/api/delivery", deliveryRoutes);
-app.use("/api/payment", paymentRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/upload", uploadRoutes);
 app.use("/api/test", testRoutes);
 
 app.get("/test-error", (req: Request, res: Response, next: NextFunction) => {
@@ -174,25 +142,29 @@ app.get("/test-error", (req: Request, res: Response, next: NextFunction) => {
     next(error);
   }
 });
+
 app.use(errorHandler);
 
+// Global error middleware
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   console.log("GLOBAL ERROR MIDDLEWARE TRIGGERED");
   console.error(err);
   if (!res.headersSent) {
-    res.status(err.status || 500).json({
-      message: err.message,
-      stack: err.stack,
+    res.status(err.statusCode || err.status || 500).json({
+      message: err.message || 'Internal Server Error',
+      errors: err.errors || undefined,
+      ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
     });
   } else {
     next(err);
   }
 });
 
-server.listen(port, async () => {
-  console.warn(`Server running on port ${port}`);
+app.listen(port, async () => {
+  console.warn(`🚀 Dynamic Content Blocks API running on port ${port}`);
   console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`📚 API Documentation: http://localhost:${port}/api/docs`);
   console.log('🌐 Allowed CORS Origins:');
   allowedOrigins.forEach((origin, index) => {
     if (typeof origin === 'string') {
