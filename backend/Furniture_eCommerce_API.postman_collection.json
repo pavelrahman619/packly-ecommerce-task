@@ -1,0 +1,1098 @@
+{
+  "info": {
+    "name": "Furniture eCommerce API",
+    "description": "Complete API collection for the Furniture eCommerce platform including authentication, products, cart, orders, and admin operations.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "furniture-ecommerce"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{authToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080"
+    },
+    {
+      "key": "authToken",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "🔐 Authentication",
+      "item": [
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "response": [
+            {
+              "name": "Successful Login",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"password123\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/auth/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "auth", "login"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\",\n  \"user\": {\n    \"id\": \"64f123...\",\n    \"email\": \"user@example.com\",\n    \"name\": \"John Doe\"\n  },\n  \"expires_in\": \"7d\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "logout"]
+            }
+          }
+        },
+        {
+          "name": "Verify Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "verify"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🛋️ Products",
+      "item": [
+        {
+          "name": "Get All Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products?page=1&limit=12&category=&price_min=100&price_max=1000&color=brown&material=wood&search=sofa",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "12"
+                },
+                {
+                  "key": "category",
+                  "value": ""
+                },
+                {
+                  "key": "price_min",
+                  "value": "100"
+                },
+                {
+                  "key": "price_max",
+                  "value": "1000"
+                },
+                {
+                  "key": "color",
+                  "value": "brown"
+                },
+                {
+                  "key": "material",
+                  "value": "wood"
+                },
+                {
+                  "key": "search",
+                  "value": "sofa"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Product by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/64f123abc456def789012345",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "64f123abc456def789012345"]
+            }
+          }
+        },
+        {
+          "name": "Search Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/search?q=leather sofa&category=64f123abc456def789012345&filters={\"price\":{\"$lte\":500}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "leather sofa"
+                },
+                {
+                  "key": "category",
+                  "value": "64f123abc456def789012345"
+                },
+                {
+                  "key": "filters",
+                  "value": "{\"price\":{\"$lte\":500}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Create Product",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Modern Leather Sofa\",\n  \"sku\": \"SOF-001\",\n  \"category\": \"64f123abc456def789012345\",\n  \"price\": 799.99,\n  \"description\": \"Comfortable 3-seater leather sofa perfect for modern living rooms\",\n  \"variants\": [\n    {\n      \"color\": \"Brown\",\n      \"material\": \"Leather\",\n      \"size\": \"Large\",\n      \"price\": 799.99,\n      \"stock\": 15,\n      \"sku\": \"SOF-001-BR-L\"\n    },\n    {\n      \"color\": \"Black\",\n      \"material\": \"Leather\",\n      \"size\": \"Large\",\n      \"price\": 849.99,\n      \"stock\": 8,\n      \"sku\": \"SOF-001-BL-L\"\n    }\n  ],\n  \"images\": [\n    {\n      \"url\": \"https://example.com/images/sofa-1.jpg\",\n      \"alt\": \"Modern Leather Sofa - Front View\",\n      \"is_primary\": true\n    },\n    {\n      \"url\": \"https://example.com/images/sofa-2.jpg\",\n      \"alt\": \"Modern Leather Sofa - Side View\",\n      \"is_primary\": false\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/products",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products"]
+            }
+          }
+        },
+        {
+          "name": "Update Product",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated Modern Leather Sofa\",\n  \"sku\": \"SOF-001\",\n  \"category\": \"64f123abc456def789012345\",\n  \"price\": 899.99,\n  \"description\": \"Updated description for comfortable 3-seater leather sofa\",\n  \"variants\": [\n    {\n      \"color\": \"Brown\",\n      \"material\": \"Leather\",\n      \"size\": \"Large\",\n      \"price\": 899.99,\n      \"stock\": 12,\n      \"sku\": \"SOF-001-BR-L\"\n    }\n  ],\n  \"images\": [\n    {\n      \"url\": \"https://example.com/images/updated-sofa-1.jpg\",\n      \"alt\": \"Updated Modern Leather Sofa\",\n      \"is_primary\": true\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/products/64f123abc456def789012345",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "64f123abc456def789012345"]
+            }
+          }
+        },
+        {
+          "name": "Delete Product",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/64f123abc456def789012345",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "64f123abc456def789012345"]
+            }
+          }
+        },
+        {
+          "name": "Get Product Stock",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/64f123abc456def789012345/stock",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "64f123abc456def789012345", "stock"]
+            }
+          }
+        },
+        {
+          "name": "Update Product Stock",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"locations\": [\n    {\n      \"location\": \"Main Warehouse\",\n      \"stock\": 25,\n      \"more_arriving\": true\n    }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/products/64f123abc456def789012345/stock",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "products", "64f123abc456def789012345", "stock"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📂 Categories",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "categories"]
+            }
+          },
+          "response": [
+            {
+              "name": "Categories Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/categories",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "categories"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"categories\": [\n    {\n      \"id\": \"64f123abc456def789012345\",\n      \"name\": \"Sofas\",\n      \"slug\": \"sofas\",\n      \"image_url\": \"https://example.com/categories/sofas.jpg\",\n      \"parent_id\": null\n    },\n    {\n      \"id\": \"64f123abc456def789012346\",\n      \"name\": \"Chairs\",\n      \"slug\": \"chairs\",\n      \"image_url\": \"https://example.com/categories/chairs.jpg\",\n      \"parent_id\": null\n    }\n  ]\n}"
+            }
+          ]
+        },
+        {
+          "name": "Get Category Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/categories/64f123abc456def789012345/products?page=1&limit=12&filters={\"price\":{\"$lte\":1000}}",
+              "host": ["{{baseUrl}}"],
+              "path": [
+                "api",
+                "categories",
+                "64f123abc456def789012345",
+                "products"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "12"
+                },
+                {
+                  "key": "filters",
+                  "value": "{\"price\":{\"$lte\":1000}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🛒 Cart",
+      "item": [
+        {
+          "name": "Get Cart",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/cart",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cart"]
+            }
+          },
+          "response": [
+            {
+              "name": "Cart Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/cart",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "cart"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"items\": [\n    {\n      \"product_id\": \"64f123abc456def789012345\",\n      \"variant_id\": \"64f123abc456def789012346\",\n      \"quantity\": 2,\n      \"price\": 799.99\n    }\n  ],\n  \"total\": 1599.98\n}"
+            }
+          ]
+        },
+        {
+          "name": "Add to Cart",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": \"64f123abc456def789012345\",\n  \"variant_id\": \"64f123abc456def789012346\",\n  \"quantity\": 1\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cart/add",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cart", "add"]
+            }
+          }
+        },
+        {
+          "name": "Update Cart Item",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": \"64f123abc456def789012345\",\n  \"variant_id\": \"64f123abc456def789012346\",\n  \"quantity\": 3\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cart/update",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cart", "update"]
+            }
+          }
+        },
+        {
+          "name": "Remove from Cart",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_id\": \"64f123abc456def789012345\",\n  \"variant_id\": \"64f123abc456def789012346\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/cart/remove",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "cart", "remove"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📦 Orders",
+      "item": [
+        {
+          "name": "Get All Orders",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders?page=1&limit=10&status=pending&customer=john@example.com&date_from=2024-01-01&date_to=2024-12-31",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "pending"
+                },
+                {
+                  "key": "customer",
+                  "value": "john@example.com"
+                },
+                {
+                  "key": "date_from",
+                  "value": "2024-01-01"
+                },
+                {
+                  "key": "date_to",
+                  "value": "2024-12-31"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Order by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/64f123abc456def789012345",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "64f123abc456def789012345"]
+            }
+          }
+        },
+        {
+          "name": "Create Order",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"items\": [\n    {\n      \"product_id\": \"64f123abc456def789012345\",\n      \"variant_id\": \"64f123abc456def789012346\",\n      \"quantity\": 2,\n      \"price\": 799.99\n    }\n  ],\n  \"shipping_address\": {\n    \"name\": \"John Doe\",\n    \"street\": \"123 Main St\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"zip\": \"10001\",\n    \"country\": \"USA\",\n    \"phone\": \"+1-555-123-4567\"\n  },\n  \"billing_address\": {\n    \"name\": \"John Doe\",\n    \"street\": \"123 Main St\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"zip\": \"10001\",\n    \"country\": \"USA\",\n    \"phone\": \"+1-555-123-4567\"\n  },\n  \"payment_method\": \"stripe\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders"]
+            }
+          }
+        },
+        {
+          "name": "Update Order Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"shipped\",\n  \"notes\": \"Order has been shipped via FedEx. Tracking number: 1234567890\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/64f123abc456def789012345/status",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "64f123abc456def789012345", "status"]
+            }
+          }
+        },
+        {
+          "name": "Track Order",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/orders/64f123abc456def789012345/track",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "orders", "64f123abc456def789012345", "track"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🌐 Content Management",
+      "item": [
+        {
+          "name": "Get Banner Content",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/content/banner",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "content", "banner"]
+            }
+          }
+        },
+        {
+          "name": "Update Banner Content",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"image_url\": \"https://example.com/banner.jpg\",\n  \"title\": \"Spring Sale - Up to 50% Off\",\n  \"button_text\": \"Shop Now\",\n  \"button_link\": \"/sale\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/content/banner",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "content", "banner"]
+            }
+          }
+        },
+        {
+          "name": "Get Sale Section",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/content/sale-section",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "content", "sale-section"]
+            }
+          }
+        },
+        {
+          "name": "Update Sale Section",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Flash Sale\",\n  \"description\": \"Limited time offers on premium furniture\",\n  \"discount_text\": \"Up to 40% OFF\",\n  \"products\": [\"64f123abc456def789012345\", \"64f123abc456def789012346\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/content/sale-section",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "content", "sale-section"]
+            }
+          }
+        },
+        {
+          "name": "Get Featured Products",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/content/featured-products",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "content", "featured-products"]
+            }
+          }
+        },
+        {
+          "name": "Update Featured Products",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"product_ids\": [\"64f123abc456def789012345\", \"64f123abc456def789012346\", \"64f123abc456def789012347\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/content/featured-products",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "content", "featured-products"]
+            }
+          }
+        },
+        {
+          "name": "Get Footer Content",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/content/footer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "content", "footer"]
+            }
+          }
+        },
+        {
+          "name": "Update Footer Content",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"about_text\": \"Premium furniture for modern homes\",\n  \"contact_info\": {\n    \"email\": \"info@furniturestore.com\",\n    \"phone\": \"+1-555-123-4567\",\n    \"address\": \"123 Furniture Ave, NY 10001\"\n  },\n  \"social_links\": {\n    \"facebook\": \"https://facebook.com/furniturestore\",\n    \"instagram\": \"https://instagram.com/furniturestore\",\n    \"twitter\": \"https://twitter.com/furniturestore\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/content/footer",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "content", "footer"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🚚 Delivery",
+      "item": [
+        {
+          "name": "Validate Address",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"address\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"zip\": \"10001\",\n    \"country\": \"USA\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/validate-address",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "validate-address"]
+            }
+          },
+          "response": [
+            {
+              "name": "Address Validation Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"address\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"zip\": \"10001\",\n    \"country\": \"USA\"\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/delivery/validate-address",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "delivery", "validate-address"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"address\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"zip\": \"10001\",\n    \"country\": \"USA\"\n  },\n  \"is_valid\": true,\n  \"is_in_zone\": true,\n  \"distance_miles\": 12.5\n}"
+            }
+          ]
+        },
+        {
+          "name": "Calculate Delivery Cost",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"address\": {\n    \"street\": \"123 Main St\",\n    \"city\": \"New York\",\n    \"state\": \"NY\",\n    \"zip\": \"10001\",\n    \"country\": \"USA\"\n  },\n  \"order_total\": 1599.98\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/delivery/calculate-cost",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "delivery", "calculate-cost"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "💳 Payment",
+      "item": [
+        {
+          "name": "Create Payment Intent",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"amount\": 1599.98,\n  \"currency\": \"usd\",\n  \"order_id\": \"64f123abc456def789012345\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/payment/create-intent",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payment", "create-intent"]
+            }
+          },
+          "response": [
+            {
+              "name": "Payment Intent Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"amount\": 1599.98,\n  \"currency\": \"usd\",\n  \"order_id\": \"64f123abc456def789012345\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/payment/create-intent",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "payment", "create-intent"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"client_secret\": \"pi_1234567890_secret_abcdefghijk\",\n  \"amount\": 159998,\n  \"currency\": \"usd\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Confirm Payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"payment_intent_id\": \"pi_1234567890\",\n  \"order_id\": \"64f123abc456def789012345\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/payment/confirm",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "payment", "confirm"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👑 Admin",
+      "item": [
+        {
+          "name": "Get Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/admin/dashboard",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "admin", "dashboard"]
+            }
+          },
+          "response": [
+            {
+              "name": "Dashboard Stats",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/api/admin/dashboard",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "admin", "dashboard"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"total_orders\": 1247,\n  \"total_products\": 156,\n  \"total_customers\": 342,\n  \"recent_orders\": [\n    {\n      \"id\": \"64f123abc456def789012345\",\n      \"customer\": \"John Doe\",\n      \"total\": 1599.98,\n      \"status\": \"pending\",\n      \"created_at\": \"2024-01-15T10:30:00Z\"\n    }\n  ]\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "📤 File Upload",
+      "item": [
+        {
+          "name": "Upload Single Image",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/upload/image",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "upload", "image"]
+            }
+          },
+          "response": [
+            {
+              "name": "Upload Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "image",
+                      "type": "file",
+                      "src": []
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/api/upload/image",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api", "upload", "image"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [],
+              "cookie": [],
+              "body": "{\n  \"url\": \"https://example.com/uploads/image-123456.jpg\",\n  \"filename\": \"sofa-image.jpg\",\n  \"size\": 2456789\n}"
+            }
+          ]
+        },
+        {
+          "name": "Upload Bulk Images",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/upload/bulk-images",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "upload", "bulk-images"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Set up environment variables if needed",
+          "if (!pm.environment.get(\"baseUrl\")) {",
+          "    pm.environment.set(\"baseUrl\", \"http://localhost:8080\");",
+          "}"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Global test script for all requests",
+          "pm.test(\"Status code is in 200-299 range\", function () {",
+          "    pm.expect(pm.response.code).to.be.within(200, 299);",
+          "});",
+          "",
+          "// Auto-save auth token from login",
+          "if (pm.request.url.getPath().includes('/api/auth/login') && pm.response.code === 200) {",
+          "    const response = pm.response.json();",
+          "    if (response.token) {",
+          "        pm.environment.set('authToken', response.token);",
+          "        console.log('Auth token saved to environment');",
+          "    }",
+          "}"
+        ]
+      }
+    }
+  ]
+}
