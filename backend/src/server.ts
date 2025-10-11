@@ -7,6 +7,11 @@ import testRoutes from "./routes/test.router";
 import swaggerUi from 'swagger-ui-express';
 import swaggerJsdoc from 'swagger-jsdoc';
 
+// Import database connection - this establishes the connection
+import "./db/index";
+import { dbConnectionPromise } from "./db/index";
+import mongoose from "mongoose";
+
 import { errorHandler } from "./middleware/erroHandler";
 import cors from "cors";
 import { Request, Response, NextFunction } from "express";
@@ -161,16 +166,30 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
   }
 });
 
-app.listen(port, async () => {
-  console.warn(`🚀 Dynamic Content Blocks API running on port ${port}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-  console.log(`📚 API Documentation: http://localhost:${port}/api/docs`);
-  console.log('🌐 Allowed CORS Origins:');
-  allowedOrigins.forEach((origin, index) => {
-    if (typeof origin === 'string') {
-      console.log(`  ${index + 1}. ${origin}`);
-    } else if (origin instanceof RegExp) {
-      console.log(`  ${index + 1}. ${origin.toString()} (regex pattern)`);
-    }
-  });
-});
+// Wait for database connection before starting server
+const startServer = async () => {
+  try {
+    // Wait for database connection
+    await dbConnectionPromise;
+    console.log('✅ Database connection verified');
+
+    app.listen(port, () => {
+      console.warn(`🚀 Dynamic Content Blocks API running on port ${port}`);
+      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`📚 API Documentation: http://localhost:${port}/api/docs`);
+      console.log('🌐 Allowed CORS Origins:');
+      allowedOrigins.forEach((origin, index) => {
+        if (typeof origin === 'string') {
+          console.log(`  ${index + 1}. ${origin}`);
+        } else if (origin instanceof RegExp) {
+          console.log(`  ${index + 1}. ${origin.toString()} (regex pattern)`);
+        }
+      });
+    });
+  } catch (error) {
+    console.error('❌ Failed to start server:', error);
+    process.exit(1);
+  }
+};
+
+startServer();
