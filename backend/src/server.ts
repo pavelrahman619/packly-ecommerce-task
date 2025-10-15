@@ -25,11 +25,11 @@ const DEV_FRONTEND_URL = "http://localhost:3000";
 const DEV_ADMIN_URL = "http://localhost:3001";
 
 // Production URLs (update these with your actual production domains)
-const PROD_FRONTEND_URL = process.env.FRONTEND_URL || "https://staging-release--splendorous-centaur-b5e5f1.netlify.app";
-const PROD_ADMIN_URL = process.env.ADMIN_URL || "https://staging-release--splendorous-centaur-b5e5f1.netlify.app";
+const PROD_FRONTEND_URL = process.env.FRONTEND_URL;
+const PROD_ADMIN_URL = process.env.ADMIN_URL ;
 
 // Netlify site configuration
-const NETLIFY_SITE_ID = "splendorous-centaur-b5e5f1";
+const NETLIFY_SITE_ID = "";
 
 // Determine allowed origins based on environment
 const allowedOrigins = process.env.NODE_ENV === "production" 

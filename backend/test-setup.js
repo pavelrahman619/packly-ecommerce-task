@@ -35,7 +35,7 @@ function makeRequest(url) {
 
 // Test endpoints
 async function runTests() {
-  console.log('🚀 Testing Furniture E-commerce Backend Setup...');
+  console.log('🚀 Testing E-commerce Backend Setup...');
   console.log('=================================================\n');
 
   const tests = [

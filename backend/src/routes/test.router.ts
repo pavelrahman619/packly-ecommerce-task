@@ -95,7 +95,7 @@ router.get("/status", (req: Request, res: Response) => {
 
   res.status(200).json({
     status: "OK",
-    message: "Furniture E-commerce Backend Status",
+    message: "E-commerce Backend Status",
     server: {
       uptime: `${Math.floor(uptime / 60)} minutes ${Math.floor(uptime % 60)} seconds`,
       environment: process.env.NODE_ENV || "development",

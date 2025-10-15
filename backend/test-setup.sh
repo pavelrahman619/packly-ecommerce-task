@@ -3,7 +3,7 @@
 # Test script for backend setup verification
 BASE_URL="http://localhost:8080"
 
-echo "🚀 Testing Furniture E-commerce Backend Setup..."
+echo "🚀 Testing E-commerce Backend Setup..."
 echo "================================================="
 
 # Test basic health check
